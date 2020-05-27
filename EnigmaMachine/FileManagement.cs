@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
 
 namespace EnigmaMachine
 {
@@ -34,7 +36,7 @@ namespace EnigmaMachine
         /// </summary>
         /// <param name="fn">the file name defined in FileNames</param>
         /// <returns>the file path</returns>
-        public static string GetFilePath(FileNames fn)
+        private static string GetFilePath(FileNames fn)
         {
             string path = "";   // stores the path
 
@@ -43,6 +45,25 @@ namespace EnigmaMachine
             else path = FILE_PATH[1];
 
             return path;    // returns the file
+        }
+
+        public static string GetInformationFromFile(FileNames fn)
+        {
+            string information = "";
+            string path = Application.StartupPath + GetFilePath(fn);
+
+            StreamReader reader = new StreamReader(path);
+
+            while (reader.Peek() > 0)
+            {
+                information += reader.ReadLine() + "\n";
+            }
+
+            reader.Close();
+
+            information = information.Substring(0, information.Length - 5);
+
+            return information;
         }
     }
 }
