@@ -57,6 +57,11 @@ namespace EnigmaMachine
         /// </summary>
         /// <returns></returns>
         public string GetCipher() { return cipher; }
+        /// <summary>
+        /// Returns the last letter in the alphabet string
+        /// </summary>
+        /// <returns></returns>
+        public char GetLastAlphabetLetter() { return alphabet[alphabet.Length - 1]; }
 
         /// <summary>
         /// Gets or sets the cipher number

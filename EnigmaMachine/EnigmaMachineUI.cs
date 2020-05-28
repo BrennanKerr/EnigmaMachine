@@ -239,7 +239,7 @@ namespace EnigmaMachine
                     n++;
                 }
 
-                RotateControls(n, 1);
+                RotateCypher(n, 1);
             }
         }
 
@@ -262,7 +262,7 @@ namespace EnigmaMachine
                     n++;
                 }
 
-                RotateControls(n, -1);
+                RotateCypher(n, -1);
             }
         }
         #endregion
@@ -386,6 +386,18 @@ namespace EnigmaMachine
                     break;
                 }
             }
+
+            RotateControls(2);
+            // rotates the center rotor if required
+            if (machine.CheckIfRotate(2))
+            {
+                RotateControls(1);
+                // rotates the left rotor if required
+                if (machine.CheckIfRotate(1))
+                {
+                    RotateControls(0);
+                }
+            }
         }
 
         /// <summary>
@@ -428,11 +440,11 @@ namespace EnigmaMachine
         }
 
         /// <summary>
-        /// Rotates the controls in the appropriate direction
+        /// Rotates the cipher
         /// </summary>
         /// <param name="n">the rotor number</param>
         /// <param name="dir">the direction of rotation</param>
-        private void RotateControls(int n, int dir = 1)
+        private void RotateCypher(int n, int dir = 1)
         {
             // if the direction is positive, set it to 1
             if (dir > 0) dir = 1;
@@ -444,6 +456,17 @@ namespace EnigmaMachine
             // rotates the rotor
             machine.RotateRotor(r, dir);
 
+            // rotate the rotor controls
+            RotateControls(n, dir);
+        }
+
+        /// <summary>
+        /// Rotates the rotor controls
+        /// </summary>
+        /// <param name="n">the rotor number</param>
+        /// <param name="dir">the direction to spin it</param>
+        private void RotateControls(int n, int dir = 1)
+        {
             // gets the letter of the current rotation
             char l = lbCurrent[n].Text[0];
             // sets the label to the next 

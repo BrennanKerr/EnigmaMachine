@@ -59,6 +59,7 @@ namespace EnigmaMachine
         /// <param name="index">the rotor number</param>
         /// <param name="rotor">the rotor settings</param>
         public void SetRotor(int index, Rotors rotor) { rotors[index] = rotor; }
+
         /// <summary>
         /// Gets or sets the reflector
         /// </summary>
@@ -153,9 +154,9 @@ namespace EnigmaMachine
         /// </summary>
         /// <param name="num">the rotor index</param>
         /// <returns></returns>
-        private bool CheckIfRotate(int num)
+        public bool CheckIfRotate(int num)
         {
-            return rotors[num].GetCipher()[25] == Rotors.GetRotorAdvancements(rotors[num].CipherNumber);
+            return rotors[num].GetLastAlphabetLetter() == Rotors.GetRotorAdvancements(rotors[num].CipherNumber);
         }
 
         /// <summary>
