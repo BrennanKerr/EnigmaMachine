@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * File:        Rotors.cs
+ * Description: Creates a class that defines information about a Rotor
+ * Author:      Brennan Kerr
+ * Since:       27 May 2020
+ */
 
 namespace EnigmaMachine
 {
+    /// <summary>
+    /// Defines information about a rotor
+    /// </summary>
     public class Rotors
     {
         /// <summary>
@@ -32,6 +36,12 @@ namespace EnigmaMachine
         private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         #endregion
 
+        /// <summary>
+        /// Initializes the Rotor
+        /// </summary>
+        /// <param name="rNum">the number of the rotor in the array</param>
+        /// <param name="cNum">the cipher index number from ROTOR_DEFAULTS</param>
+        /// <param name="offset">the offset of the rotor</param>
         public Rotors(int rNum = 0, int cNum = 0, int offset = 0)
         {
             rotorNum = rNum;
@@ -42,12 +52,15 @@ namespace EnigmaMachine
         }
 
         #region METHODS
+        /// <summary>
+        /// Retrieves the cipher string
+        /// </summary>
+        /// <returns></returns>
+        public string GetCipher() { return cipher; }
 
-        public string GetCipher()
-        {
-            return cipher;
-        }
-
+        /// <summary>
+        /// Gets or sets the cipher number
+        /// </summary>
         public int CipherNumber
         {
             get { return cipherNumber; }
@@ -109,27 +122,66 @@ namespace EnigmaMachine
             return str;
         }
 
+        /// <summary>
+        /// Retrieve the letters that force the next rotor to advance
+        /// </summary>
+        /// <param name="index">the cipher index</param>
+        /// <returns>the character that forces the rotation</returns>
         public static char GetRotorAdvancements(int index)
         {
             return ROTOR_DEFAULTS[index][2][0];
         }
         #endregion
 
-
+        /// <summary>
+        /// Retrieves the letter from the cipher at the given index
+        /// </summary>
+        /// <param name="i">the index of the letter</param>
+        /// <returns>the character at the index</returns>
         public char LetterInCipher(int i) { return cipher[i]; }
+        /// <summary>
+        /// Retrieves the letter from the alphabet string at the given index
+        /// </summary>
+        /// <param name="i">the index of the letter</param>
+        /// <returns>the character at the index</returns>
         public char LetterInAlphabet(int i) { return alphabet[i]; }
+        /// <summary>
+        /// Retrieves the index of the letter in the cipher
+        /// </summary>
+        /// <param name="l">the letter</param>
+        /// <returns>the index of the letter</returns>
         public int CipherLetterIndex(char l) { return cipher.IndexOf(l); }
+        /// <summary>
+        /// Retrieves the index of the letter in the alphabet string
+        /// </summary>
+        /// <param name="l">the letter</param>
+        /// <returns>the index of the letter</returns>
         public int AlphabetLetterIndex(char l) { return alphabet.IndexOf(l); }
 
+        /// <summary>
+        /// Rotates the rotor
+        /// </summary>
+        /// <param name="rotations"></param>
         public void Rotate(int rotations = 1)
         {
+            // rotates the cipher string
             cipher = ChangeIndex(cipher, rotations);
+            // rotates the alphabet string
             alphabet = ChangeIndex(alphabet, rotations);
         }
 
+        /// <summary>
+        /// Changes the starting index for the string
+        /// </summary>
+        /// <param name="s">the string to change the starting index</param>
+        /// <param name="o">the offset of the string</param>
+        /// <returns>the string offset to the given index</returns>
         public string ChangeIndex(string s, int o) { return s.Substring(o, s.Length - o) + s.Substring(0, o); }
 
-
+        /// <summary>
+        /// Returns the rotor as a string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return cipher;

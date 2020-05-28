@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * File:        FileManagement.cs
+ * Description: Creates a static class and an enumeration that manages the applications files
+ * Author:      Brennan Kerr
+ * Since:       27 May 2020
+ */
 using System.Windows.Forms;
 using System.IO;
 
@@ -50,37 +51,58 @@ namespace EnigmaMachine
             return path;    // returns the file
         }
 
+        /// <summary>
+        /// Retrieves information from the given file
+        /// </summary>
+        /// <param name="fn"></param>
+        /// <returns></returns>
         public static string GetInformationFromFile(FileNames fn)
         {
+            // the information from the given file
             string information = "";
+            // the path of the file
             string path = Application.StartupPath + GetFilePath(fn);
 
+            // creates a StreamReader to retrieve the information
             StreamReader reader = new StreamReader(path);
 
+            // reads each line and appends a new line
             while (reader.Peek() > 0)
             {
                 information += reader.ReadLine() + "\n";
             }
 
+            // closes the stream reader
             reader.Close();
 
+            // removes the last new line character
             information = information.Substring(0, information.Length - 5);
 
+            // returns the information
             return information;
         }
 
+        /// <summary>
+        /// Appends a string to the output file
+        /// </summary>
+        /// <param name="append">the string to append</param>
         public static void AppendToOutput(string append)
         {
+            // opens the file in a streamwriter
             StreamWriter write = new StreamWriter(Application.StartupPath + GetFilePath(FileNames.Output), true);
-            write.Write(append);
-            write.Close();
+            write.Write(append);    // adds the string
+            write.Close();          // closes the writer
         }
 
+        /// <summary>
+        /// Clears the output file
+        /// </summary>
         public static void ClearOutput()
         {
+            // creates a stream writer
             StreamWriter write = new StreamWriter(Application.StartupPath + GetFilePath(FileNames.Output));
-            write.Write("");
-            write.Close();
+            write.Write("");    // writes an empty string
+            write.Close();      // closes the writer
         }
     }
 }

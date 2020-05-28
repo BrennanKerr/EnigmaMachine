@@ -6,4 +6,4 @@ D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaM
 D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaMachine.csproj.GenerateResource.cache
 D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaMachine.exe
 D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaMachine.pdb
-D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaMachine.Form1.resources
+D:\Created Programs\Other Programs\EnigmaMachine\EnigmaMachine\obj\Debug\EnigmaMachine.EnigmaMachineUI.resources
