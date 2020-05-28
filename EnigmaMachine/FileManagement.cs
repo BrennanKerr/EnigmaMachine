@@ -14,7 +14,8 @@ namespace EnigmaMachine
     public enum FileNames
     {
         Rotors,
-        Reflectors
+        Reflectors,
+        Output
     }
 
     /// <summary>
@@ -28,7 +29,8 @@ namespace EnigmaMachine
         private static readonly string[] FILE_PATH =
         {
             "/files/rotors.txt",
-            "/files/reflectors.txt"
+            "/files/reflectors.txt",
+            "/files/output.txt"
         };
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace EnigmaMachine
 
             // determines the file
             if (fn == FileNames.Rotors) path = FILE_PATH[0];
+            else if (fn == FileNames.Output) path = FILE_PATH[2];
             else path = FILE_PATH[1];
 
             return path;    // returns the file
@@ -64,6 +67,20 @@ namespace EnigmaMachine
             information = information.Substring(0, information.Length - 5);
 
             return information;
+        }
+
+        public static void AppendToOutput(string append)
+        {
+            StreamWriter write = new StreamWriter(Application.StartupPath + GetFilePath(FileNames.Output), true);
+            write.Write(append);
+            write.Close();
+        }
+
+        public static void ClearOutput()
+        {
+            StreamWriter write = new StreamWriter(Application.StartupPath + GetFilePath(FileNames.Output));
+            write.Write("");
+            write.Close();
         }
     }
 }

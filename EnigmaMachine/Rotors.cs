@@ -37,6 +37,8 @@ namespace EnigmaMachine
             rotorNum = rNum;
             cipherNumber = cNum;
             cipher = ROTOR_DEFAULTS[cNum][1];
+
+            if (offset > 0) Rotate(offset);
         }
 
         #region METHODS
@@ -119,13 +121,13 @@ namespace EnigmaMachine
         public int CipherLetterIndex(char l) { return cipher.IndexOf(l); }
         public int AlphabetLetterIndex(char l) { return alphabet.IndexOf(l); }
 
-        public void Rotate()
+        public void Rotate(int rotations = 1)
         {
-            cipher = ChanceIndex(cipher, 1);
-            alphabet = ChanceIndex(alphabet, 1);
+            cipher = ChangeIndex(cipher, rotations);
+            alphabet = ChangeIndex(alphabet, rotations);
         }
 
-        public string ChanceIndex(string s, int o) { return s.Substring(o, s.Length - o) + s.Substring(0, o); }
+        public string ChangeIndex(string s, int o) { return s.Substring(o, s.Length - o) + s.Substring(0, o); }
 
 
         public override string ToString()
