@@ -18,6 +18,11 @@ namespace EnigmaMachine
         #region FIELDS
         Machine machine;            // the enigma machine
         bool keyPressed = false;    // determines if a key is currently pressed
+
+        Button[] btnUp = new Button[3];
+        Button[] btnDown = new Button[3];
+        Label[] lbCurrent = new Label[3];
+
         #endregion
 
         #region CONSTRUCTORS
@@ -59,6 +64,10 @@ namespace EnigmaMachine
             AddLabels(pnLamps);
             AddLabels(pnKeys);
             AddLabels(pnPlugboard);
+
+            int num = pnRotorNumbers.Controls.Count;
+            for (int i = 0; i < num; i++)
+                OffsetLoad(i);
         }
         #endregion
 
@@ -97,6 +106,61 @@ namespace EnigmaMachine
             cbReflector.Items.AddRange(Reflector.GetReflectorList);
             // sets the starting index to 1
             cbReflector.SelectedIndex = 1;
+        }
+
+        /// <summary>
+        /// Loads the settings for the offset
+        /// </summary>
+        /// <param name="n"></param>
+        public void OffsetLoad(int n)
+        {
+            int h = pnRotorNumbers.Controls[n].Height;
+            int w = pnRotorNumbers.Controls[n].Width;
+            int x = pnRotorNumbers.Controls[n].Location.X + w / 2;
+            int y = h;
+
+            CreateOffsetButton(x, y, "Z", n);
+            y += y;
+            CreateOffsetLabel(x, y, "A", n);
+            y += y;
+            CreateOffsetButton(x, y, "B", n, false);
+        }
+
+        private void CreateOffsetLabel(int x, int y, string t, int n)
+        {
+            Label lb = new Label();
+            Point p = new Point(x, y);
+            lb.Location = p;
+            lb.Text = t;
+            lb.Name = "lbRotor" + n + "Offset";
+            pnRotorNumbers.Controls.Add(lb);
+            lbCurrent[n] = lb;
+        }
+
+        private void CreateOffsetButton(int x, int y, string t, int n, bool isUp = true)
+        {
+            Button btn = new Button();
+            x -= btn.Width / 2;
+
+            Point p = new Point(x, y);
+            btn.Location = p;
+            btn.Text = t;
+            btn.Name = "btnRotor" + n.ToString() + (isUp ? "Up" : "Down");
+
+            if (isUp)
+            {
+                btn.Click += RotateUp;
+                btnUp[n] = btn;
+
+                pnRotorNumbers.Controls.Add(btnUp[n]);
+            }
+            else
+            {
+                btn.Click += RotateDown;
+                btnDown[n] = btn;
+
+                pnRotorNumbers.Controls.Add(btnDown[n]);
+            }
         }
         #endregion
 
@@ -154,6 +218,52 @@ namespace EnigmaMachine
         private void LetterClick(object sender, EventArgs e)
         {
             EncryptNewValue((sender as Button).Text[0]);
+        }
+
+        /// <summary>
+        /// Manages the rotate up buttons
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RotateUp(object sender, EventArgs e)
+        {
+            int n = 0;
+
+            Button btn = sender as Button;
+
+            if (btn != null)
+            {
+                foreach (Button b in btnUp)
+                {
+                    if (btn == b) break;
+                    n++;
+                }
+
+                RotateControls(n, 1);
+            }
+        }
+
+        /// <summary>
+        /// Manages the rotate down buttons
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RotateDown(object sender, EventArgs e)
+        {
+            int n = 0;
+
+            Button btn = sender as Button;
+
+            if (btn != null)
+            {
+                foreach (Button b in btnDown)
+                {
+                    if (btn == b) break;
+                    n++;
+                }
+
+                RotateControls(n, -1);
+            }
         }
         #endregion
 
@@ -317,28 +427,34 @@ namespace EnigmaMachine
             return l;
         }
 
+        /// <summary>
+        /// Rotates the controls in the appropriate direction
+        /// </summary>
+        /// <param name="n">the rotor number</param>
+        /// <param name="dir">the direction of rotation</param>
+        private void RotateControls(int n, int dir = 1)
+        {
+            // if the direction is positive, set it to 1
+            if (dir > 0) dir = 1;
+            // if the direction is negative, set it to -1
+            else if (dir < 0) dir = -1;
+
+            // gets the rotor with the desired number
+            Rotors r = machine.GetRotor(n);
+            // rotates the rotor
+            machine.RotateRotor(r, dir);
+
+            // gets the letter of the current rotation
+            char l = lbCurrent[n].Text[0];
+            // sets the label to the next 
+            l = CheckLetter(l, dir);
+            lbCurrent[n].Text = l.ToString();
+
+            // sets the buttons to the appropriate letter          
+            btnUp[n].Text = CheckLetter(btnUp[n].Text[0], dir).ToString();
+            btnDown[n].Text = CheckLetter(btnDown[n].Text[0], dir).ToString();
+        }
         #endregion
-
-        
-
-        private void btnRotorOneUp_Click(object sender, EventArgs e)
-        {
-            Rotors r = machine.GetRotor(0);
-            machine.RotateRotor(r, 1);
-
-            char l = lbRotorOneOffset.Text[0];
-
-            l = CheckLetter(l, 1);
-            lbRotorOneOffset.Text = l.ToString();
-
-            btnRotorOneUp.Text = CheckLetter(btnRotorOneUp.Text[0], 1).ToString();
-            btnRotorOneDown.Text = CheckLetter(btnRotorOneDown.Text[0], 1).ToString();
-        }
-
-        private void btnRotorOneDown_Click(object sender, EventArgs e)
-        {
-
-        }
 
     }
 }

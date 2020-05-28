@@ -38,9 +38,6 @@
             this.pnLamps = new System.Windows.Forms.Panel();
             this.pnKeys = new System.Windows.Forms.Panel();
             this.pnPlugboard = new System.Windows.Forms.Panel();
-            this.lbRotorOneOffset = new System.Windows.Forms.Label();
-            this.btnRotorOneUp = new System.Windows.Forms.Button();
-            this.btnRotorOneDown = new System.Windows.Forms.Button();
             this.pnRotorNumbers.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -81,7 +78,7 @@
             this.pnRotorNumbers.Controls.Add(this.cbRotorThree);
             this.pnRotorNumbers.Location = new System.Drawing.Point(195, 31);
             this.pnRotorNumbers.Name = "pnRotorNumbers";
-            this.pnRotorNumbers.Size = new System.Drawing.Size(593, 40);
+            this.pnRotorNumbers.Size = new System.Drawing.Size(593, 115);
             this.pnRotorNumbers.TabIndex = 3;
             // 
             // cbReflector
@@ -123,50 +120,18 @@
             this.pnPlugboard.Size = new System.Drawing.Size(776, 144);
             this.pnPlugboard.TabIndex = 10;
             // 
-            // lbRotorOneOffset
-            // 
-            this.lbRotorOneOffset.AutoSize = true;
-            this.lbRotorOneOffset.Location = new System.Drawing.Point(267, 102);
-            this.lbRotorOneOffset.Name = "lbRotorOneOffset";
-            this.lbRotorOneOffset.Size = new System.Drawing.Size(14, 13);
-            this.lbRotorOneOffset.TabIndex = 11;
-            this.lbRotorOneOffset.Text = "A";
-            // 
-            // btnRotorOneUp
-            // 
-            this.btnRotorOneUp.Location = new System.Drawing.Point(263, 75);
-            this.btnRotorOneUp.Name = "btnRotorOneUp";
-            this.btnRotorOneUp.Size = new System.Drawing.Size(22, 23);
-            this.btnRotorOneUp.TabIndex = 12;
-            this.btnRotorOneUp.Text = "Z";
-            this.btnRotorOneUp.UseVisualStyleBackColor = true;
-            this.btnRotorOneUp.Click += new System.EventHandler(this.btnRotorOneUp_Click);
-            // 
-            // btnRotorOneDown
-            // 
-            this.btnRotorOneDown.Location = new System.Drawing.Point(263, 118);
-            this.btnRotorOneDown.Name = "btnRotorOneDown";
-            this.btnRotorOneDown.Size = new System.Drawing.Size(22, 23);
-            this.btnRotorOneDown.TabIndex = 13;
-            this.btnRotorOneDown.Text = "B";
-            this.btnRotorOneDown.UseVisualStyleBackColor = true;
-            this.btnRotorOneDown.Click += new System.EventHandler(this.btnRotorOneDown_Click);
-            // 
-            // Form1
+            // EnigmaMachineUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 601);
-            this.Controls.Add(this.btnRotorOneDown);
-            this.Controls.Add(this.btnRotorOneUp);
-            this.Controls.Add(this.lbRotorOneOffset);
             this.Controls.Add(this.pnPlugboard);
             this.Controls.Add(this.pnKeys);
             this.Controls.Add(this.pnLamps);
             this.Controls.Add(this.tbOutput);
             this.Controls.Add(this.cbReflector);
             this.Controls.Add(this.pnRotorNumbers);
-            this.Name = "Form1";
+            this.Name = "EnigmaMachineUI";
             this.Text = "Form1";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
@@ -188,9 +153,6 @@
         private System.Windows.Forms.Panel pnKeys;
         private System.Windows.Forms.Panel pnPlugboard;
         private System.Windows.Forms.ComboBox cbReflector;
-        private System.Windows.Forms.Label lbRotorOneOffset;
-        private System.Windows.Forms.Button btnRotorOneUp;
-        private System.Windows.Forms.Button btnRotorOneDown;
     }
 }
 
