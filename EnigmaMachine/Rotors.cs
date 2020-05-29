@@ -36,6 +36,7 @@ namespace EnigmaMachine
         private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         #endregion
 
+        #region CONSTRUCTOR
         /// <summary>
         /// Initializes the Rotor
         /// </summary>
@@ -50,6 +51,7 @@ namespace EnigmaMachine
 
             if (offset > 0) Rotate(offset);
         }
+        #endregion
 
         #region METHODS
         /// <summary>
@@ -73,7 +75,38 @@ namespace EnigmaMachine
             { 
                 cipherNumber = value;
                 cipher = ROTOR_DEFAULTS[cipherNumber][1];
+                alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             }
+        }
+
+
+        /// <summary>
+        /// Rotates the rotor
+        /// </summary>
+        /// <param name="rotations"></param>
+        public void Rotate(int rotations = 1)
+        {
+            // rotates the cipher string
+            cipher = ChangeIndex(cipher, rotations);
+            // rotates the alphabet string
+            alphabet = ChangeIndex(alphabet, rotations);
+        }
+
+        /// <summary>
+        /// Changes the starting index for the string
+        /// </summary>
+        /// <param name="s">the string to change the starting index</param>
+        /// <param name="o">the offset of the string</param>
+        /// <returns>the string offset to the given index</returns>
+        public string ChangeIndex(string s, int o) { return s.Substring(o, s.Length - o) + s.Substring(0, o); }
+
+        /// <summary>
+        /// Returns the rotor as a string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return cipher;
         }
         #endregion
 
@@ -138,6 +171,7 @@ namespace EnigmaMachine
         }
         #endregion
 
+        #region GETTERS_FOR_LETTERS_AND_INDEXES
         /// <summary>
         /// Retrieves the letter from the cipher at the given index
         /// </summary>
@@ -162,34 +196,6 @@ namespace EnigmaMachine
         /// <param name="l">the letter</param>
         /// <returns>the index of the letter</returns>
         public int AlphabetLetterIndex(char l) { return alphabet.IndexOf(l); }
-
-        /// <summary>
-        /// Rotates the rotor
-        /// </summary>
-        /// <param name="rotations"></param>
-        public void Rotate(int rotations = 1)
-        {
-            // rotates the cipher string
-            cipher = ChangeIndex(cipher, rotations);
-            // rotates the alphabet string
-            alphabet = ChangeIndex(alphabet, rotations);
-        }
-
-        /// <summary>
-        /// Changes the starting index for the string
-        /// </summary>
-        /// <param name="s">the string to change the starting index</param>
-        /// <param name="o">the offset of the string</param>
-        /// <returns>the string offset to the given index</returns>
-        public string ChangeIndex(string s, int o) { return s.Substring(o, s.Length - o) + s.Substring(0, o); }
-
-        /// <summary>
-        /// Returns the rotor as a string
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return cipher;
-        }
+        #endregion
     }
 }

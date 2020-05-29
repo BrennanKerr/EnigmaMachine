@@ -34,6 +34,7 @@ namespace EnigmaMachine
             "/files/output.txt"
         };
 
+        #region FILE_INFORMATION
         /// <summary>
         /// Gets the corresponding path of the file name passed
         /// </summary>
@@ -81,7 +82,9 @@ namespace EnigmaMachine
             // returns the information
             return information;
         }
+        #endregion
 
+        #region OUTPUT_METHODS
         /// <summary>
         /// Appends a string to the output file
         /// </summary>
@@ -104,5 +107,6 @@ namespace EnigmaMachine
             write.Write("");    // writes an empty string
             write.Close();      // closes the writer
         }
+        #endregion
     }
 }

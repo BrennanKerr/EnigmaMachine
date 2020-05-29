@@ -5,6 +5,7 @@
  * Since:       27 May 2020
  */
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -179,7 +180,16 @@ namespace EnigmaMachine
             {
                 // set the cipher number to the rotor with the same index as the combobox
                 int rNum = pnRotorNumbers.Controls.IndexOf(sender as Control);
+                int previous = machine.GetRotor(rNum).CipherNumber;
+
                 machine.GetRotor(rNum).CipherNumber = cb.SelectedIndex;
+
+                // changes the controls back to the default
+                btnUp[rNum].Text = "Z";
+                lbCurrent[rNum].Text = "A";
+                btnDown[rNum].Text = "B";
+
+                ChangeSelectedIndexes(cb, previous);
             }
         }
 
@@ -341,8 +351,7 @@ namespace EnigmaMachine
                     lb.Height = h;
                     lb.Text = order[c].ToString();
                     lb.Name = prefix + lb.Text;
-                    lb.Click += LetterClick;
-
+                    
                     // if the label is the keys, bold the font
                     if (pn == pnKeys) lb.Font = new Font(this.Font, FontStyle.Bold);
 
@@ -476,6 +485,28 @@ namespace EnigmaMachine
             // sets the buttons to the appropriate letter          
             btnUp[n].Text = CheckLetter(btnUp[n].Text[0], dir).ToString();
             btnDown[n].Text = CheckLetter(btnDown[n].Text[0], dir).ToString();
+        }
+
+        private void ChangeSelectedIndexes(ComboBox cb, int previous)
+        {
+            List<ComboBox> cbs = new List<ComboBox>();
+            
+            foreach (Control c in pnRotorNumbers.Controls)
+            {
+                ComboBox newCb = c as ComboBox;
+                if (newCb != null) cbs.Add(newCb);
+            }
+
+            for (int i = 0; i < cbs.Count; i++)
+            {
+                if (cbs[i] != cb)
+                {
+                    if (cbs[i].SelectedIndex == cb.SelectedIndex)
+                    {
+                        cbs[i].SelectedIndex = previous;
+                    }
+                }
+            }
         }
         #endregion
 

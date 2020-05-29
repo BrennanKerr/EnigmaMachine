@@ -65,7 +65,7 @@
             // 
             this.cbRotorThree.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRotorThree.FormattingEnabled = true;
-            this.cbRotorThree.Location = new System.Drawing.Point(400, 3);
+            this.cbRotorThree.Location = new System.Drawing.Point(399, 0);
             this.cbRotorThree.Name = "cbRotorThree";
             this.cbRotorThree.Size = new System.Drawing.Size(193, 21);
             this.cbRotorThree.TabIndex = 2;
@@ -124,7 +124,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 601);
+            this.ClientSize = new System.Drawing.Size(800, 678);
             this.Controls.Add(this.pnPlugboard);
             this.Controls.Add(this.pnKeys);
             this.Controls.Add(this.pnLamps);
@@ -132,7 +132,7 @@
             this.Controls.Add(this.cbReflector);
             this.Controls.Add(this.pnRotorNumbers);
             this.Name = "EnigmaMachineUI";
-            this.Text = "Form1";
+            this.Text = "Enigma Machine";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.pnRotorNumbers.ResumeLayout(false);
