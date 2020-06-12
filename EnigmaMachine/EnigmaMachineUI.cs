@@ -17,6 +17,11 @@ namespace EnigmaMachine
     public partial class EnigmaMachineUI : Form
     {
         #region FIELDS
+        // the backcolour of the panels
+        static Color PNL_BG_COLOUR = Color.Gray;
+        // the forecolours of the displayed letters
+        static Color DEFAULT_LETTER_FG_COLOUR = Color.White;
+
         Machine machine;            // the enigma machine
         bool keyPressed = false;    // determines if a key is currently pressed
 
@@ -29,9 +34,10 @@ namespace EnigmaMachine
         //string order = "QWERTYUIOPASDFGHJKLZXCVBNM";
 
 
-        bool isClicked = false;
-        Label last;
+        bool isClicked = false; // used to determine if the plugboard settings are being changed 
+        Label last;             // stores the last label used in the plugboard settings
 
+        // defines the colour order of the plugboard settings
         private Color[] colours =
         {
             Color.Firebrick,
@@ -46,6 +52,8 @@ namespace EnigmaMachine
             Color.Brown
         };
 
+        // stores an array of booleans to determine if the corresponding
+            // colour is in use
         private bool[] colourUsed;
         #endregion
 
@@ -57,6 +65,12 @@ namespace EnigmaMachine
         {
             InitializeComponent();
             this.KeyPreview = true; // makes the form the starting point for key presses
+
+            // sets the sizes
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
             // sets the Rotor defaults
             Rotors.SetRotorDefaults = FileManagement.GetInformationFromFile(FileNames.Rotors);
@@ -89,12 +103,18 @@ namespace EnigmaMachine
             AddLabels(pnKeys);
             AddLabels(pnPlugboard);
 
+            // counts the number of rotors on the form and sets the offset controls
             int num = pnRotorNumbers.Controls.Count;
             for (int i = 0; i < num; i++)
                 OffsetLoad(i);
 
+            // initializes the colours used array
             colourUsed = new bool[colours.Length];
 
+            // sets the plugboard header to the default foreground colour
+            lbPlugboardHeader.ForeColor = DEFAULT_LETTER_FG_COLOUR;
+
+            // centers the clear button
             btnClearPlugboard.Location = new Point(this.Width / 2 - btnClearPlugboard.Width / 2, 595);
         }
         #endregion
@@ -142,17 +162,18 @@ namespace EnigmaMachine
         /// <param name="n"></param>
         public void OffsetLoad(int n)
         {
+            // sets values
             int h = pnRotorNumbers.Controls[n].Height;
             int w = pnRotorNumbers.Controls[n].Width;
             int x = pnRotorNumbers.Controls[n].Location.X + w / 2;
             int y = h * 2;
 
+            // creates the rotor setting controls
             CreateOffsetButton(x, y, "Z", n);
             y += btnUp[n].Height;
             CreateOffsetLabel(x, y, "A", n);
             y += lbCurrent[n].Height;
             CreateOffsetButton(x, y, "B", n, false);
-            
         }
 
         /// <summary>
@@ -339,6 +360,102 @@ namespace EnigmaMachine
                 RotateCypher(n, -1);
             }
         }
+
+        /// <summary>
+        /// Clears the plugboard settings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClearPlugboardSettings(object sender, EventArgs e)
+        {
+            machine.ValidatePlugBoard("");
+
+            foreach (Label lb in pnPlugboard.Controls)
+            {
+                isClicked = false;
+                RemoveColour(lb);
+            }
+
+            for (int i = 0; i < colourUsed.Length; i++)
+                colourUsed[i] = false;
+
+            btnClearPlugboard.Visible = false;
+        }
+
+        /// <summary>
+        /// Manages if a plugboard letter is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PlugboardClicked(object sender, EventArgs e)
+        {
+            Label lb = sender as Label; // converts the object to a label
+
+            // if it was a label
+            if (lb != null)
+            {
+                char letter = lb.Text[0];   // gets the letter associated with the label
+
+                // checks the plugboard for the letter
+                CheckPlugboard(letter);
+
+                if (machine.GetPlugboard().Length < colours.Length * 2)
+                {
+                    // if this is the first click
+                    if (!isClicked)
+                    {
+                        last = lb;  // stores the current label as the previous one
+                    }
+                    // if this is the second click
+                    else
+                    {
+                        // if the letter is the same, store the last as null
+                        if (letter == last.Text[0])
+                            last = null;
+                        else
+                        {
+                            // saves the letters to the plugboard
+                            machine.AddToPlugboard(last.Text + letter.ToString());
+
+                            // sets the background colours of the corresponding labels
+                            Color bg = NextColour();
+                            lb.BackColor = bg;
+                            last.BackColor = bg;
+
+                            btnClearPlugboard.Visible = true;
+                        }
+
+                    }
+
+                    isClicked = !isClicked; // clicked is opposite
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the rotor outlines
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pnRotorNumbers_Paint(object sender, PaintEventArgs e)
+        {
+            // creates a graphics object for the rotor panel
+            Graphics g = pnRotorNumbers.CreateGraphics();
+
+            // run once for each rotor
+            for (int i = 0; i < 3; i++)
+            {
+                // creates a new rectangle
+                Rectangle rec = new Rectangle();
+                // sets the attributes based on the other controls
+                rec.Location = new Point(btnUp[i].Location.X - 1, btnUp[i].Location.Y - 1);
+                rec.Width = btnUp[i].Width + 1;
+                rec.Height = btnDown[i].Bottom - btnUp[i].Top + 1;
+
+                // draws the rectangle
+                g.DrawRectangle(new Pen(Color.Black, 1), rec);
+            }
+        }
         #endregion
 
         #region FORM_EVENT_HANDLERS
@@ -364,11 +481,15 @@ namespace EnigmaMachine
         /// <param name="e"></param>
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            keyPressed = false;
-            // reset all the back colours
-            foreach (Label l in pnLamps.Controls)
+            if (keyPressed)
             {
-                l.BackColor = this.BackColor;
+                keyPressed = false;
+                // reset all the back colours
+                foreach (Label l in pnLamps.Controls)
+                {
+                    RemoveColour(l);
+                    l.ForeColor = DEFAULT_LETTER_FG_COLOUR;
+                }
             }
         }
         #endregion
@@ -383,7 +504,7 @@ namespace EnigmaMachine
             const int HEIGHT_DIV = 5;   // the hight divider
             const int WIDTH_DIV = 20;   // the width divider
 
-
+            pn.BackColor = PNL_BG_COLOUR;
 
             // the number of letters per row
             int[] numberPerRow = { 9, 8, 9 };
@@ -403,10 +524,12 @@ namespace EnigmaMachine
                 // determines the starting width
                 //int startW = (pn.Width / 2) - ((numberPerRow[i] * WIDTH_DIV));
 
+                // starts the starting width
                 int startW = pn.Width / 2 - w / 2;
                 startW -= (w * (numberPerRow[i] / 2) -1);
                 if (numberPerRow[i] % 2 == 0) startW += w / 2;
 
+                // sets the starting height
                 int startH = h * ((HEIGHT_DIV - numberPerRow.GetLength(0)) / 2);
 
                 // runs through each column in the row
@@ -422,6 +545,7 @@ namespace EnigmaMachine
                     lb.Height = h;
                     lb.Text = order[c].ToString();
                     lb.Name = prefix + lb.Text;
+                    lb.ForeColor = DEFAULT_LETTER_FG_COLOUR;
                     lb.Width = w;
 
                     // if the label is the keys, bold the font
@@ -437,6 +561,10 @@ namespace EnigmaMachine
             }
         }
 
+        /// <summary>
+        /// Gives the label the plugboard click event
+        /// </summary>
+        /// <param name="lb">the label to give the event to</param>
         public void SetPlugboardSettings(ref Label lb)
         {
             lb.Click += PlugboardClicked;
@@ -470,6 +598,7 @@ namespace EnigmaMachine
                 if (l.Text == encrypted.ToString())
                 {
                     l.BackColor = Color.Yellow;
+                    l.ForeColor = Color.Black;
                     break;
                 }
             }
@@ -593,80 +722,6 @@ namespace EnigmaMachine
                 }
             }
         }
-        #endregion
-
-        /// <summary>
-        /// Draws the rotor outlines
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void pnRotorNumbers_Paint(object sender, PaintEventArgs e)
-        {
-            // creates a graphics object for the rotor panel
-            Graphics g = pnRotorNumbers.CreateGraphics();
-
-            // run once for each rotor
-            for (int i = 0; i < 3; i++)
-            {
-                // creates a new rectangle
-                Rectangle rec = new Rectangle();
-                // sets the attributes based on the other controls
-                rec.Location = new Point(btnUp[i].Location.X - 1, btnUp[i].Location.Y - 1);
-                rec.Width = btnUp[i].Width + 1;
-                rec.Height = btnDown[i].Bottom - btnUp[i].Top + 1;
-                
-                // draws the rectangle
-                g.DrawRectangle(new Pen(Color.Black, 1), rec);
-            }
-        }
-
-        /// <summary>
-        /// Manages if a plugboard letter is clicked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PlugboardClicked(object sender, EventArgs e)
-        {
-            Label lb = sender as Label; // converts the object to a label
-
-            // if it was a label
-            if (lb != null)
-            {
-                char letter = lb.Text[0];   // gets the letter associated with the label
-
-                // checks the plugboard for the letter
-                CheckPlugboard(letter);
-
-                // if this is the first click
-                if (!isClicked)
-                {
-                    last = lb;  // stores the current label as the previous one
-                }
-                // if this is the second click
-                else
-                {
-                    // if the letter is the same, store the last as null
-                    if (letter == last.Text[0])
-                        last = null;
-                    else
-                    {
-                        // saves the letters to the plugboard
-                        machine.AddToPlugboard(last.Text + letter.ToString());
-
-                        // sets the background colours of the corresponding labels
-                        Color bg = NextColour();
-                        lb.BackColor = bg;
-                        last.BackColor = bg;
-
-                        btnClearPlugboard.Visible = true;
-                    }
-
-                }
-
-                isClicked = !isClicked; // clicked is opposite
-            }
-        }
-
 
         /// <summary>
         /// Checks the plugboard settings
@@ -684,13 +739,13 @@ namespace EnigmaMachine
                 RemoveColour(pnPlugboard.Controls[order.IndexOf(letter)]);
 
                 // if the letter comes first in the sequence
-                    // remove the colour off the next letter
+                // remove the colour off the next letter
                 if (index % 2 == 0)
                 {
                     RemoveColour(pnPlugboard.Controls[order.IndexOf(pb[index + 1])]);
                 }
                 // otherwise
-                    // remove the colour off the previous letter and subtrack 1 from the index
+                // remove the colour off the previous letter and subtrack 1 from the index
                 else
                 {
                     RemoveColour(pnPlugboard.Controls[order.IndexOf(pb[index - 1])]);
@@ -705,6 +760,14 @@ namespace EnigmaMachine
 
                 if (machine.GetPlugboard().Length < 2)
                     btnClearPlugboard.PerformClick();
+            }
+            // if the plugboard length is too long
+            else if (pb.Length == colours.Length * 2)
+            {
+                MessageBox.Show("You have too many plugboard combinations." +
+                    Environment.NewLine + "Please remove some if you wish to add new ones.",
+                    "Too many combinations");
+                last = null;
             }
         }
 
@@ -737,19 +800,9 @@ namespace EnigmaMachine
         /// Sets the back colour to the colour of the form
         /// </summary>
         /// <param name="c">the control to change the colour off</param>
-        private void RemoveColour(Control c) { c.BackColor = this.BackColor; }
+        private void RemoveColour(Control c) { c.BackColor = c.Parent.BackColor; }
 
-        private void ClearPlugboardSettings(object sender, EventArgs e)
-        {
-            machine.ValidatePlugBoard("");
+        #endregion
 
-            foreach (Label lb in pnPlugboard.Controls)
-            {
-                isClicked = false;
-                RemoveColour(lb);
-            }
-
-            btnClearPlugboard.Visible = false;
-        }
     }
 }

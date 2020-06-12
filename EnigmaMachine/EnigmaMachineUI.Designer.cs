@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.cbRotorOne = new System.Windows.Forms.ComboBox();
             this.cbRotorTwo = new System.Windows.Forms.ComboBox();
             this.cbRotorThree = new System.Windows.Forms.ComboBox();
@@ -38,12 +39,15 @@
             this.pnLamps = new System.Windows.Forms.Panel();
             this.pnKeys = new System.Windows.Forms.Panel();
             this.pnPlugboard = new System.Windows.Forms.Panel();
+            this.lbPlugboardHeader = new System.Windows.Forms.Label();
             this.lblReflector = new System.Windows.Forms.Label();
             this.lblRotorOne = new System.Windows.Forms.Label();
             this.lblRotorTwo = new System.Windows.Forms.Label();
             this.lblRotorThree = new System.Windows.Forms.Label();
             this.btnClearPlugboard = new System.Windows.Forms.Button();
+            this.ttTip = new System.Windows.Forms.ToolTip(this.components);
             this.pnRotorNumbers.SuspendLayout();
+            this.pnPlugboard.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbRotorOne
@@ -54,6 +58,7 @@
             this.cbRotorOne.Name = "cbRotorOne";
             this.cbRotorOne.Size = new System.Drawing.Size(191, 21);
             this.cbRotorOne.TabIndex = 0;
+            this.ttTip.SetToolTip(this.cbRotorOne, "Select Rotor 1 from the list below. \r\nNOTE: Each rotor can only be used once");
             this.cbRotorOne.SelectedIndexChanged += new System.EventHandler(this.RotorIndexChanged);
             // 
             // cbRotorTwo
@@ -64,6 +69,7 @@
             this.cbRotorTwo.Name = "cbRotorTwo";
             this.cbRotorTwo.Size = new System.Drawing.Size(191, 21);
             this.cbRotorTwo.TabIndex = 1;
+            this.ttTip.SetToolTip(this.cbRotorTwo, "Select Rotor 2 from the list below. \r\nNOTE: Each rotor can only be used once\r\n");
             this.cbRotorTwo.SelectedIndexChanged += new System.EventHandler(this.RotorIndexChanged);
             // 
             // cbRotorThree
@@ -74,6 +80,7 @@
             this.cbRotorThree.Name = "cbRotorThree";
             this.cbRotorThree.Size = new System.Drawing.Size(193, 21);
             this.cbRotorThree.TabIndex = 2;
+            this.ttTip.SetToolTip(this.cbRotorThree, "Select Rotor 3 from the list below. \r\nNOTE: Each rotor can only be used once\r\n");
             this.cbRotorThree.SelectedIndexChanged += new System.EventHandler(this.RotorIndexChanged);
             // 
             // pnRotorNumbers
@@ -95,6 +102,7 @@
             this.cbReflector.Name = "cbReflector";
             this.cbReflector.Size = new System.Drawing.Size(121, 21);
             this.cbReflector.TabIndex = 4;
+            this.ttTip.SetToolTip(this.cbReflector, "Select the reflector to be used.");
             this.cbReflector.SelectedIndexChanged += new System.EventHandler(this.ReflectorIndexChanged);
             // 
             // tbOutput
@@ -104,6 +112,7 @@
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.Size = new System.Drawing.Size(726, 20);
             this.tbOutput.TabIndex = 6;
+            this.ttTip.SetToolTip(this.tbOutput, "The current encryption");
             // 
             // pnLamps
             // 
@@ -111,6 +120,8 @@
             this.pnLamps.Name = "pnLamps";
             this.pnLamps.Size = new System.Drawing.Size(726, 100);
             this.pnLamps.TabIndex = 8;
+            this.ttTip.SetToolTip(this.pnLamps, "When a letter is typed, it will become encrypted and\r\nwill result in the correspo" +
+        "nding lamp being light.");
             // 
             // pnKeys
             // 
@@ -122,10 +133,23 @@
             // pnPlugboard
             // 
             this.pnPlugboard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnPlugboard.Controls.Add(this.lbPlugboardHeader);
             this.pnPlugboard.Location = new System.Drawing.Point(15, 445);
             this.pnPlugboard.Name = "pnPlugboard";
             this.pnPlugboard.Size = new System.Drawing.Size(726, 144);
             this.pnPlugboard.TabIndex = 10;
+            this.ttTip.SetToolTip(this.pnPlugboard, "Select the plugboard settings. Each letter can only\r\nbe used once. Will become co" +
+        "lour coded once a\r\npair is made.");
+            // 
+            // lbPlugboardHeader
+            // 
+            this.lbPlugboardHeader.AutoSize = true;
+            this.lbPlugboardHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbPlugboardHeader.Location = new System.Drawing.Point(3, 0);
+            this.lbPlugboardHeader.Name = "lbPlugboardHeader";
+            this.lbPlugboardHeader.Size = new System.Drawing.Size(122, 16);
+            this.lbPlugboardHeader.TabIndex = 0;
+            this.lbPlugboardHeader.Text = "Plugboard Settings";
             // 
             // lblReflector
             // 
@@ -170,6 +194,7 @@
             this.btnClearPlugboard.Size = new System.Drawing.Size(132, 29);
             this.btnClearPlugboard.TabIndex = 15;
             this.btnClearPlugboard.Text = "Clear Plugboard";
+            this.ttTip.SetToolTip(this.btnClearPlugboard, "Clear any current plugboard settings.");
             this.btnClearPlugboard.UseVisualStyleBackColor = true;
             this.btnClearPlugboard.Visible = false;
             this.btnClearPlugboard.Click += new System.EventHandler(this.ClearPlugboardSettings);
@@ -191,10 +216,13 @@
             this.Controls.Add(this.cbReflector);
             this.Controls.Add(this.pnRotorNumbers);
             this.Name = "EnigmaMachineUI";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Enigma Machine";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.pnRotorNumbers.ResumeLayout(false);
+            this.pnPlugboard.ResumeLayout(false);
+            this.pnPlugboard.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -217,6 +245,8 @@
         private System.Windows.Forms.Label lblRotorTwo;
         private System.Windows.Forms.Label lblRotorThree;
         private System.Windows.Forms.Button btnClearPlugboard;
+        private System.Windows.Forms.Label lbPlugboardHeader;
+        private System.Windows.Forms.ToolTip ttTip;
     }
 }
 
