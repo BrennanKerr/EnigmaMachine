@@ -147,6 +147,22 @@ namespace EnigmaMachine
         /// </summary>
         /// <param name="s">the string to set for the plugboard</param>
         private void SetPlugBoard(string s) { plugboard = s; }
+        /// <summary>
+        /// Adds a string to the plugboard
+        /// </summary>
+        /// <param name="s"></param>
+        public void AddToPlugboard(string s) { ValidatePlugBoard(plugboard + s); }
+        /// <summary>
+        /// Removes a part of the plugboard
+        /// </summary>
+        /// <param name="i">the starting index</param>
+        /// <param name="l">the length to remove</param>
+        public void RemoveFromPlugboard(int i = 0, int l = 2) { plugboard = plugboard.Remove(i, l); }
+        /// <summary>
+        /// Retrieves the plugboard
+        /// </summary>
+        /// <returns></returns>
+        public string GetPlugboard() { return plugboard; }
 
         /// <summary>
         /// Changes the letter if the letter is utalized in the plugboard

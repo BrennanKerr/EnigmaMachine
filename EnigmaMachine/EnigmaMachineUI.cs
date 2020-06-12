@@ -20,10 +20,33 @@ namespace EnigmaMachine
         Machine machine;            // the enigma machine
         bool keyPressed = false;    // determines if a key is currently pressed
 
-        Button[] btnUp = new Button[3];
-        Button[] btnDown = new Button[3];
-        Label[] lbCurrent = new Label[3];
+        Button[] btnUp = new Button[3];     // stores the buttons that rotate the rotor up
+        Button[] btnDown = new Button[3];   // stores the buttons that rotate the rotor down
+        Label[] lbCurrent = new Label[3];   // stores the labels that state the current start
 
+        // the order of the letters
+        string order = "QWERTZUIOASDFGHJKPYXCVBNML";
+        //string order = "QWERTYUIOPASDFGHJKLZXCVBNM";
+
+
+        bool isClicked = false;
+        Label last;
+
+        private Color[] colours =
+        {
+            Color.Firebrick,
+            Color.Red,
+            Color.Blue,
+            Color.Yellow,
+            Color.Green,
+            Color.Orange,
+            Color.Purple,
+            Color.Pink,
+            Color.Aqua,
+            Color.Brown
+        };
+
+        private bool[] colourUsed;
         #endregion
 
         #region CONSTRUCTORS
@@ -69,6 +92,10 @@ namespace EnigmaMachine
             int num = pnRotorNumbers.Controls.Count;
             for (int i = 0; i < num; i++)
                 OffsetLoad(i);
+
+            colourUsed = new bool[colours.Length];
+
+            btnClearPlugboard.Location = new Point(this.Width / 2 - btnClearPlugboard.Width / 2, 595);
         }
         #endregion
 
@@ -118,36 +145,72 @@ namespace EnigmaMachine
             int h = pnRotorNumbers.Controls[n].Height;
             int w = pnRotorNumbers.Controls[n].Width;
             int x = pnRotorNumbers.Controls[n].Location.X + w / 2;
-            int y = h;
+            int y = h * 2;
 
             CreateOffsetButton(x, y, "Z", n);
-            y += y;
+            y += btnUp[n].Height;
             CreateOffsetLabel(x, y, "A", n);
-            y += y;
+            y += lbCurrent[n].Height;
             CreateOffsetButton(x, y, "B", n, false);
+            
         }
 
+        /// <summary>
+        /// Creates the offset labels 
+        /// </summary>
+        /// <param name="x">the x coordinate</param>
+        /// <param name="y">the y coordinate</param>
+        /// <param name="t">the text</param>
+        /// <param name="n">the rotor number</param>
         private void CreateOffsetLabel(int x, int y, string t, int n)
         {
+            // creates a new label and point based on the information provided
             Label lb = new Label();
+            lb.Width = btnUp[n].Width;
+            lb.TextAlign = ContentAlignment.MiddleCenter;
+            x -= lb.Width / 2;
             Point p = new Point(x, y);
             lb.Location = p;
             lb.Text = t;
             lb.Name = "lbRotor" + n + "Offset";
+
+            lb.BorderStyle = BorderStyle.None;
+            lb.BackColor = Color.White;
+
+            // adds the label to the rotor panel
             pnRotorNumbers.Controls.Add(lb);
+            // adds the label to the array
             lbCurrent[n] = lb;
         }
 
+        /// <summary>
+        /// Creates the offset buttons
+        /// </summary>
+        /// <param name="x">the x coordinate</param>
+        /// <param name="y">the y coordinate</param>
+        /// <param name="t">the button text</param>
+        /// <param name="n">the rotor number</param>
+        /// <param name="isUp">if true, the button is for rotating the rotor up a letter</param>
         private void CreateOffsetButton(int x, int y, string t, int n, bool isUp = true)
         {
+            // creates a new button
             Button btn = new Button();
+            // centres the x coordinate
             x -= btn.Width / 2;
 
+            // sets a new point
             Point p = new Point(x, y);
+            
+            // sets the button parameters
             btn.Location = p;
             btn.Text = t;
             btn.Name = "btnRotor" + n.ToString() + (isUp ? "Up" : "Down");
 
+            btn.BackColor = Color.LightGray;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+
+            // if the button is to rotate the rotor up
             if (isUp)
             {
                 btn.Click += RotateUp;
@@ -155,6 +218,7 @@ namespace EnigmaMachine
 
                 pnRotorNumbers.Controls.Add(btnUp[n]);
             }
+            // otherwise, its for rotation down
             else
             {
                 btn.Click += RotateDown;
@@ -319,8 +383,8 @@ namespace EnigmaMachine
             const int HEIGHT_DIV = 5;   // the hight divider
             const int WIDTH_DIV = 20;   // the width divider
 
-            // the order of the letters
-            string order = "QWERTZUIOASDFGHJKPYXCVBNML";
+
+
             // the number of letters per row
             int[] numberPerRow = { 9, 8, 9 };
 
@@ -337,7 +401,13 @@ namespace EnigmaMachine
             for (int i = 0; i < numberPerRow.Length; i++)
             {
                 // determines the starting width
-                int startW = (pn.Width / 2) - ((numberPerRow[i] * WIDTH_DIV));
+                //int startW = (pn.Width / 2) - ((numberPerRow[i] * WIDTH_DIV));
+
+                int startW = pn.Width / 2 - w / 2;
+                startW -= (w * (numberPerRow[i] / 2) -1);
+                if (numberPerRow[i] % 2 == 0) startW += w / 2;
+
+                int startH = h * ((HEIGHT_DIV - numberPerRow.GetLength(0)) / 2);
 
                 // runs through each column in the row
                 for (int j = 0; j < numberPerRow[i]; j++)
@@ -346,14 +416,17 @@ namespace EnigmaMachine
                     Label lb = new Label();
 
                     // sets the label parameters
-                    lb.Location = new Point(startW + w * j, h * i);
+                    lb.Location = new Point(startW + w * j, startH + h * i);
+                    lb.TextAlign = ContentAlignment.MiddleCenter;
                     lb.Width = w;
                     lb.Height = h;
                     lb.Text = order[c].ToString();
                     lb.Name = prefix + lb.Text;
-                    
+                    lb.Width = w;
+
                     // if the label is the keys, bold the font
                     if (pn == pnKeys) lb.Font = new Font(this.Font, FontStyle.Bold);
+                    else if (pn == pnPlugboard) SetPlugboardSettings(ref lb);
 
                     // add the label to the desired panel
                     pn.Controls.Add(lb);
@@ -362,6 +435,11 @@ namespace EnigmaMachine
                     c++;
                 }
             }
+        }
+
+        public void SetPlugboardSettings(ref Label lb)
+        {
+            lb.Click += PlugboardClicked;
         }
 
         /// <summary>
@@ -487,28 +565,191 @@ namespace EnigmaMachine
             btnDown[n].Text = CheckLetter(btnDown[n].Text[0], dir).ToString();
         }
 
+        /// <summary>
+        /// Checks if another rotor has the index of the newly selected one
+        /// </summary>
+        /// <param name="cb">the current combobox</param>
+        /// <param name="previous">the previous index</param>
         private void ChangeSelectedIndexes(ComboBox cb, int previous)
         {
-            List<ComboBox> cbs = new List<ComboBox>();
-            
-            foreach (Control c in pnRotorNumbers.Controls)
+            // runs through each control in the rotor numbers panel
+            for (int i = 0; i < pnRotorNumbers.Controls.Count/*cbs.Count*/; i++)
             {
-                ComboBox newCb = c as ComboBox;
-                if (newCb != null) cbs.Add(newCb);
-            }
+                // attempts to convert the control to a combobox
+                ComboBox c = pnRotorNumbers.Controls[i] as ComboBox;
 
-            for (int i = 0; i < cbs.Count; i++)
-            {
-                if (cbs[i] != cb)
+                // if the conversion was successfull
+                if (c != null)
                 {
-                    if (cbs[i].SelectedIndex == cb.SelectedIndex)
+                    // if the control is not the same combobox
+                    if (c != cb)
                     {
-                        cbs[i].SelectedIndex = previous;
+                        // if the indexes are the same, change the new control to the previous index
+                        if (c.SelectedIndex == cb.SelectedIndex)
+                        {
+                            c.SelectedIndex = previous;
+                        }
                     }
                 }
             }
         }
         #endregion
 
+        /// <summary>
+        /// Draws the rotor outlines
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pnRotorNumbers_Paint(object sender, PaintEventArgs e)
+        {
+            // creates a graphics object for the rotor panel
+            Graphics g = pnRotorNumbers.CreateGraphics();
+
+            // run once for each rotor
+            for (int i = 0; i < 3; i++)
+            {
+                // creates a new rectangle
+                Rectangle rec = new Rectangle();
+                // sets the attributes based on the other controls
+                rec.Location = new Point(btnUp[i].Location.X - 1, btnUp[i].Location.Y - 1);
+                rec.Width = btnUp[i].Width + 1;
+                rec.Height = btnDown[i].Bottom - btnUp[i].Top + 1;
+                
+                // draws the rectangle
+                g.DrawRectangle(new Pen(Color.Black, 1), rec);
+            }
+        }
+
+        /// <summary>
+        /// Manages if a plugboard letter is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PlugboardClicked(object sender, EventArgs e)
+        {
+            Label lb = sender as Label; // converts the object to a label
+
+            // if it was a label
+            if (lb != null)
+            {
+                char letter = lb.Text[0];   // gets the letter associated with the label
+
+                // checks the plugboard for the letter
+                CheckPlugboard(letter);
+
+                // if this is the first click
+                if (!isClicked)
+                {
+                    last = lb;  // stores the current label as the previous one
+                }
+                // if this is the second click
+                else
+                {
+                    // if the letter is the same, store the last as null
+                    if (letter == last.Text[0])
+                        last = null;
+                    else
+                    {
+                        // saves the letters to the plugboard
+                        machine.AddToPlugboard(last.Text + letter.ToString());
+
+                        // sets the background colours of the corresponding labels
+                        Color bg = NextColour();
+                        lb.BackColor = bg;
+                        last.BackColor = bg;
+
+                        btnClearPlugboard.Visible = true;
+                    }
+
+                }
+
+                isClicked = !isClicked; // clicked is opposite
+            }
+        }
+
+
+        /// <summary>
+        /// Checks the plugboard settings
+        /// </summary>
+        /// <param name="letter">the current letter</param>
+        private void CheckPlugboard(char letter)
+        {
+            string pb = machine.GetPlugboard();
+            // if the letter already exists
+            if (pb.Contains(letter.ToString()))
+            {
+                int index = pb.IndexOf(letter);  // gets the index of the letter
+
+                // removes the background colour off the corresponding label
+                RemoveColour(pnPlugboard.Controls[order.IndexOf(letter)]);
+
+                // if the letter comes first in the sequence
+                    // remove the colour off the next letter
+                if (index % 2 == 0)
+                {
+                    RemoveColour(pnPlugboard.Controls[order.IndexOf(pb[index + 1])]);
+                }
+                // otherwise
+                    // remove the colour off the previous letter and subtrack 1 from the index
+                else
+                {
+                    RemoveColour(pnPlugboard.Controls[order.IndexOf(pb[index - 1])]);
+                    index -= 1;
+                }
+
+                // that colour is no longer in use
+                colourUsed[index / 2] = false;
+
+                // removes the letters from the plugboard
+                machine.RemoveFromPlugboard(index, 2);
+
+                if (machine.GetPlugboard().Length < 2)
+                    btnClearPlugboard.PerformClick();
+            }
+        }
+
+        /// <summary>
+        /// Determine the next available colour
+        /// </summary>
+        /// <returns>the first colour in the array that is not being used</returns>
+        private Color NextColour()
+        {
+            Color colour = Color.White; // sets the default colour to white
+            bool found = false;         // determines if the colour was found
+
+            // goes through each colour in the list
+            for (int i = 0; i < colours.Length && !found; i++)
+            {
+                // if the colour isnt being used
+                if (!colourUsed[i])
+                {
+                    // use the colour
+                    colour = colours[i];
+                    colourUsed[i] = true;
+                    found = true;
+                }
+            }
+
+            return colour;  // return the colour
+        }
+
+        /// <summary>
+        /// Sets the back colour to the colour of the form
+        /// </summary>
+        /// <param name="c">the control to change the colour off</param>
+        private void RemoveColour(Control c) { c.BackColor = this.BackColor; }
+
+        private void ClearPlugboardSettings(object sender, EventArgs e)
+        {
+            machine.ValidatePlugBoard("");
+
+            foreach (Label lb in pnPlugboard.Controls)
+            {
+                isClicked = false;
+                RemoveColour(lb);
+            }
+
+            btnClearPlugboard.Visible = false;
+        }
     }
 }
